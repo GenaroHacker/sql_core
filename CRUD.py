@@ -5,12 +5,7 @@ miConexion=sqlite3.connect("GestionProductos3")
 
 miCursor=miConexion.cursor()
 
-miCursor.execute("SELECT * FROM PRODUCTOS WHERE CATEGORIA='confeccion'")
-
-productos=miCursor.fetchall()
-
-print(productos)
-
+miCursor.execute("UPDATE PRODUCTOS SET NOMBRE_ARTICULO='Pelota' WHERE ID=1")
 
 
 miConexion.commit()
