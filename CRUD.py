@@ -1,71 +1,80 @@
 import sqlite3
 
-def CrearTabla( NOMBRE_BASE_DE_DATOS , NOMBRE_TABLA , ESTRUCTURA_TABLA ):
-    miConexion=sqlite3.connect(NOMBRE_BASE_DE_DATOS)
-    miCursor=miConexion.cursor()
-    miCursor.execute('''
-        CREATE TABLE ''' + NOMBRE_TABLA + ''' ( ''' + ESTRUCTURA_TABLA + ''' )
+def CreateTable( DATABASE_NAME , TABLE_NAME , TABLE_STRUCTURE ):
+    myConnection=sqlite3.connect(DATABASE_NAME)
+    myCursor=myConnection.cursor()
+    myCursor.execute('''
+        CREATE TABLE ''' + TABLE_NAME + ''' ( ''' + TABLE_STRUCTURE + ''' )
     ''')
-    miConexion.commit()
-    miConexion.close()
+    myConnection.commit()
+    myConnection.close()
 
-def InsertarRegistro(NOMBRE_BASE_DE_DATOS, REGISTRO):
-    miConexion=sqlite3.connect(NOMBRE_BASE_DE_DATOS)
-    miCursor=miConexion.cursor()
-    miCursor.execute(REGISTRO)
-    miConexion.commit()
-    miConexion.close()
+def InsertRecord(DATABASE_NAME, RECORD):
+    myConnection=sqlite3.connect(DATABASE_NAME)
+    myCursor=myConnection.cursor()
+    myCursor.execute(RECORD)
+    myConnection.commit()
+    myConnection.close()
 
-def InsertarVariosRegistros(NOMBRE_BASE_DE_DATOS, VARIOS_REGISTROS):
-    miConexion=sqlite3.connect(NOMBRE_BASE_DE_DATOS)
-    miCursor=miConexion.cursor()
-    for i in VARIOS_REGISTROS:
-        miCursor.execute(i)
-    miConexion.commit()
-    miConexion.close()
+def InsertSeveralRecords(DATABASE_NAME, MULTIPLE_RECORDS):
+    myConnection=sqlite3.connect(DATABASE_NAME)
+    myCursor=myConnection.cursor()
+    for i in MULTIPLE_RECORDS:
+        myCursor.execute(i)
+    myConnection.commit()
+    myConnection.close()
 
-def LeerRegistros(NOMBRE_BASE_DE_DATOS, NOMBRE_TABLA):
-    miConexion=sqlite3.connect(NOMBRE_BASE_DE_DATOS)
-    miCursor=miConexion.cursor()
-    miCursor.execute("SELECT * FROM " + NOMBRE_TABLA)
-    registros=miCursor.fetchall()
-    miConexion.close()
-    return registros
+def ReadRecords(DATABASE_NAME, TABLE_NAME):
+    myConnection=sqlite3.connect(DATABASE_NAME)
+    myCursor=myConnection.cursor()
+    myCursor.execute("SELECT * FROM " + TABLE_NAME)
+    records=myCursor.fetchall()
+    myConnection.close()
+    return records
 
-def ActualizarRegistro(NOMBRE_BASE_DE_DATOS, REGISTRO):
-    miConexion=sqlite3.connect(NOMBRE_BASE_DE_DATOS)
-    miCursor=miConexion.cursor()
-    miCursor.execute(REGISTRO)
-    miConexion.commit()
-    miConexion.close()
+def UpdateRecord(DATABASE_NAME, RECORD):
+    myConnection=sqlite3.connect(DATABASE_NAME)
+    myCursor=myConnection.cursor()
+    myCursor.execute(RECORD)
+    myConnection.commit()
+    myConnection.close()
 
-def EliminarRegistro(NOMBRE_BASE_DE_DATOS, REGISTRO):
-    miConexion=sqlite3.connect(NOMBRE_BASE_DE_DATOS)
-    miCursor=miConexion.cursor()
-    miCursor.execute(REGISTRO)
-    miConexion.commit()
-    miConexion.close()
+def RemoveRecord(DATABASE_NAME, RECORD):
+    myConnection=sqlite3.connect(DATABASE_NAME)
+    myCursor=myConnection.cursor()
+    myCursor.execute(RECORD)
+    myConnection.commit()
+    myConnection.close()
 
-def EjecutarComando(NOMBRE_BASE_DE_DATOS, COMANDO):
-    miConexion=sqlite3.connect(NOMBRE_BASE_DE_DATOS)
-    miCursor=miConexion.cursor()
-    miCursor.execute(COMANDO)
-    miConexion.commit()
-    miConexion.close()
+def RunCommand(DATABASE_NAME, COMMAND):
+    myConnection=sqlite3.connect(DATABASE_NAME)
+    myCursor=myConnection.cursor()
+    myCursor.execute(COMMAND)
+    myConnection.commit()
+    myConnection.close()
 
-columnas = """
-        CODIGO_ARTICULO INTEGER PRIMARY KEY AUTOINCREMENT,
-        NOMBRE_ARTICULO VARCHAR(50),
-        PRECIO INTEGER,
-        SECCION VARCHAR(20)"""
 
-CrearTabla("BaseProductos","TablaProductos",columnas)
-InsertarRegistro("BaseProductos","INSERT INTO TablaProductos VALUES (NULL,'BALON',10,'DEPORTE')")
-InsertarVariosRegistros("BaseProductos",[
-    "INSERT INTO TablaProductos VALUES (NULL,'BALON',10,'DEPORTE')",
-    "INSERT INTO TablaProductos VALUES (NULL,'JARRON',20,'CERAMICA')",
-    "INSERT INTO TablaProductos VALUES (NULL,'PELOTA',5,'DEPORTE')"
-])
-print(LeerRegistros("BaseProductos","TablaProductos"))
-ActualizarRegistro("BaseProductos","UPDATE TablaProductos SET NOMBRE_ARTICULO='PELO8TA' WHERE CODIGO_ARTICULO=3")
-EliminarRegistro("BaseProductos","DELETE FROM TablaProductos WHERE CODIGO_ARTICULO=3")
+
+if __name__ == "__main__":
+
+    columns = """
+            ARTICLE_CODE INTEGER PRIMARY KEY AUTOINCREMENT,
+            ITEM_NAME VARCHAR(50),
+            PRICE INTEGER,
+            SECTION VARCHAR(20)"""
+    CreateTable("BaseProducts","TableProducts",columns)
+
+    InsertRecord("BaseProducts","INSERT INTO TableProducts VALUES (NULL,'BALL',10,'SPORT')")
+
+    InsertSeveralRecords("BaseProducts",[
+        "INSERT INTO TableProducts VALUES (NULL,'GOLF STICK',25,'SPORT')",
+        "INSERT INTO TableProducts VALUES (NULL,'GLASS',20,'CERAMIC')",
+        "INSERT INTO TableProducts VALUES (NULL,'T-SHIRT',5,'CLOTHES')"
+    ])
+
+    list_of_tuples = ReadRecords("BaseProducts","TableProducts")
+    print(list_of_tuples)
+
+    UpdateRecord("BaseProducts","UPDATE TableProducts SET ITEM_NAME='BALL NAME UPDATED' WHERE ARTICLE_CODE=3")
+
+    RemoveRecord("BaseProducts","DELETE FROM TableProducts WHERE ARTICLE_CODE=3")
