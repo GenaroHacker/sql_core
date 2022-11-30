@@ -1,113 +1,102 @@
 import sqlite3
 
-def CreateTable( DATABASE_NAME , TABLE_NAME , TABLE_STRUCTURE ):
-    myConnection=sqlite3.connect(DATABASE_NAME)
-    myCursor=myConnection.cursor()
-    myCursor.execute('''
-        CREATE TABLE ''' + TABLE_NAME + ''' ( ''' + TABLE_STRUCTURE + ''' )
-    ''')
-    myConnection.commit()
-    myConnection.close()
+def create_table( database_name , table_name , table_structure ):
+    my_connection=sqlite3.connect(database_name)
+    my_cursor=my_connection.cursor()
+    try:
+        my_cursor.execute('''
+            CREATE TABLE {} ( {} )
+        '''.format(table_name, table_structure))
+        my_connection.commit()
+        my_connection.close()
+        #Table created successfully
+    except sqlite3.OperationalError:
+        #Table already exists
+        pass
 
-def InsertRecord(DATABASE_NAME, RECORD):
-    myConnection=sqlite3.connect(DATABASE_NAME)
-    myCursor=myConnection.cursor()
-    myCursor.execute(RECORD)
-    myConnection.commit()
-    myConnection.close()
+def insert_record(database_name, record):
+    my_connection=sqlite3.connect(database_name)
+    my_cursor=my_connection.cursor()
+    my_cursor.execute(record)
+    my_connection.commit()
+    my_connection.close()
 
-def InsertSeveralRecords(DATABASE_NAME, MULTIPLE_RECORDS):
-    myConnection=sqlite3.connect(DATABASE_NAME)
-    myCursor=myConnection.cursor()
-    for i in MULTIPLE_RECORDS:
-        myCursor.execute(i)
-    myConnection.commit()
-    myConnection.close()
+def insert_several_records(database_name, multiple_records):
+    my_connection=sqlite3.connect(database_name)
+    my_cursor=my_connection.cursor()
+    for i in multiple_records:
+        my_cursor.execute(i)
+    my_connection.commit()
+    my_connection.close()
 
-def ReadRecords(DATABASE_NAME, TABLE_NAME):
-    myConnection=sqlite3.connect(DATABASE_NAME)
-    myCursor=myConnection.cursor()
-    myCursor.execute("SELECT * FROM " + TABLE_NAME)
-    records=myCursor.fetchall()
-    myConnection.close()
+def read_records(database_name, table_name):
+    my_connection=sqlite3.connect(database_name)
+    my_cursor=my_connection.cursor()
+    my_cursor.execute("SELECT * FROM {}".format(table_name))
+    records=my_cursor.fetchall()
+    my_connection.close()
     return records
 
-def ReadLastRecord(DATABASE_NAME, TABLE_NAME):
-    myConnection=sqlite3.connect(DATABASE_NAME)
-    myCursor=myConnection.cursor()
-    myCursor.execute("SELECT * FROM " + TABLE_NAME + " ORDER BY ID DESC LIMIT 1")
-    records=myCursor.fetchall()
-    myConnection.close()
+def read_last_record(database_name, table_name):
+    my_connection=sqlite3.connect(database_name)
+    my_cursor=my_connection.cursor()
+    my_cursor.execute("SELECT * FROM {} ORDER BY ID DESC LIMIT 1".format(table_name))
+    records=my_cursor.fetchall()
+    my_connection.close()
     return records[0]
 
-def UpdateRecord(DATABASE_NAME, RECORD):
-    myConnection=sqlite3.connect(DATABASE_NAME)
-    myCursor=myConnection.cursor()
-    myCursor.execute(RECORD)
-    myConnection.commit()
-    myConnection.close()
+def update_record(database_name, record):
+    my_connection=sqlite3.connect(database_name)
+    my_cursor=my_connection.cursor()
+    my_cursor.execute(record)
+    my_connection.commit()
+    my_connection.close()
 
-def RemoveRecord(DATABASE_NAME, RECORD):
-    myConnection=sqlite3.connect(DATABASE_NAME)
-    myCursor=myConnection.cursor()
-    myCursor.execute(RECORD)
-    myConnection.commit()
-    myConnection.close()
+def remove_record(database_name, record):
+    my_connection=sqlite3.connect(database_name)
+    my_cursor=my_connection.cursor()
+    my_cursor.execute(record)
+    my_connection.commit()
+    my_connection.close()
 
-def RunCommand(DATABASE_NAME, COMMAND):
-    myConnection=sqlite3.connect(DATABASE_NAME)
-    myCursor=myConnection.cursor()
-    myCursor.execute(COMMAND)
-    myConnection.commit()
-    myConnection.close()
-
-
+def run_command(database_name, command):
+    my_connection=sqlite3.connect(database_name)
+    my_cursor=my_connection.cursor()
+    my_cursor.execute(command)
+    my_connection.commit()
+    my_connection.close()
 
 if __name__ == "__main__":
     #Create one Table
-    try:
-        columns = """
-                ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                ITEM_NAME VARCHAR(50),
-                PRICE INTEGER,
-                SECTION VARCHAR(20)"""
-        CreateTable("BaseProducts","TableProducts",columns)
-        print("Table created successfully!\n")
-    except sqlite3.OperationalError:
-        print("Table already exists!!!!\n")
-
+    columns = """
+            ID INTEGER PRIMARY KEY AUTOINCREMENT,
+            ITEM_NAME VARCHAR(50),
+            PRICE INTEGER,
+            SECTION VARCHAR(20)"""
+    create_table("BaseProducts","TableProducts",columns)
 
     #Insert one record
-    InsertRecord("BaseProducts","INSERT INTO TableProducts VALUES (NULL,'BALL',10,'SPORT')")
-    print("Record inserted successfully!\n")
-
+    insert_record("BaseProducts","INSERT INTO TableProducts VALUES (NULL,'BALL',10,'SPORT')")
+    #Record inserted successfully!
 
     #Insert several records
-    InsertSeveralRecords("BaseProducts",[
+    insert_several_records("BaseProducts",[
         "INSERT INTO TableProducts VALUES (NULL,'GOLF STICK',25,'SPORT')",
         "INSERT INTO TableProducts VALUES (NULL,'GLASS',20,'CERAMIC')",
         "INSERT INTO TableProducts VALUES (NULL,'T-SHIRT',5,'CLOTHES')"
     ])
-    print("Records inserted successfully!\n")
-
+    #Records inserted successfully!
 
     #Read all records
-    list_of_tuples = ReadRecords("BaseProducts","TableProducts")
-    print("The list of tuples with all the records is:")
-    print(list_of_tuples)
-
+    list_of_tuples = read_records("BaseProducts","TableProducts")
 
     #Read last record
-    last_record = ReadLastRecord("BaseProducts","TableProducts")
-    print("\nThe last record is:")
-    print(last_record)
-
+    last_record = read_last_record("BaseProducts","TableProducts")
 
     #Update record
-    UpdateRecord("BaseProducts","UPDATE TableProducts SET ITEM_NAME='BALL NAME UPDATED' WHERE ID=3")
-    print("\nThe record with ID=3 has been updated successfully!\n")
-
+    update_record("BaseProducts","UPDATE TableProducts SET ITEM_NAME='BALL NAME UPDATED' WHERE ID=3")
+    #The record with ID=3 has been updated successfully!
 
     #Remove record
-    RemoveRecord("BaseProducts","DELETE FROM TableProducts WHERE ID=3")
-    print("The record with ID=4 has been removed successfully!\n")
+    remove_record("BaseProducts","DELETE FROM TableProducts WHERE ID=3")
+    #The record with ID=4 has been removed successfully!
