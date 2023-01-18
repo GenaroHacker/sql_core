@@ -1,70 +1,59 @@
 import sqlite3
 
+def connect_disconnect(func):
+    def decorated(*args, **kwargs):
+        global my_connection
+        global my_cursor
+        my_connection=sqlite3.connect(args[0])
+        my_cursor=my_connection.cursor()
+        func(*args, **kwargs)
+        my_connection.commit()
+        my_connection.close()
+    return decorated
+
+@connect_disconnect
 def create_table( database_name , table_name , table_structure ):
-    my_connection=sqlite3.connect(database_name)
-    my_cursor=my_connection.cursor()
     try:
         my_cursor.execute('''
             CREATE TABLE {} ( {} )
         '''.format(table_name, table_structure))
-        my_connection.commit()
-        my_connection.close()
         #Table created successfully
     except sqlite3.OperationalError:
         #Table already exists
         pass
 
+@connect_disconnect
 def insert_record(database_name, record):
-    my_connection=sqlite3.connect(database_name)
-    my_cursor=my_connection.cursor()
     my_cursor.execute(record)
-    my_connection.commit()
-    my_connection.close()
 
+@connect_disconnect
 def insert_several_records(database_name, multiple_records):
-    my_connection=sqlite3.connect(database_name)
-    my_cursor=my_connection.cursor()
     for i in multiple_records:
         my_cursor.execute(i)
-    my_connection.commit()
-    my_connection.close()
 
+@connect_disconnect
 def read_records(database_name, table_name):
-    my_connection=sqlite3.connect(database_name)
-    my_cursor=my_connection.cursor()
     my_cursor.execute("SELECT * FROM {}".format(table_name))
     records=my_cursor.fetchall()
-    my_connection.close()
     return records
 
+@connect_disconnect
 def read_last_record(database_name, table_name):
-    my_connection=sqlite3.connect(database_name)
-    my_cursor=my_connection.cursor()
     my_cursor.execute("SELECT * FROM {} ORDER BY ID DESC LIMIT 1".format(table_name))
     records=my_cursor.fetchall()
-    my_connection.close()
     return records[0]
 
+@connect_disconnect
 def update_record(database_name, record):
-    my_connection=sqlite3.connect(database_name)
-    my_cursor=my_connection.cursor()
     my_cursor.execute(record)
-    my_connection.commit()
-    my_connection.close()
 
+@connect_disconnect
 def remove_record(database_name, record):
-    my_connection=sqlite3.connect(database_name)
-    my_cursor=my_connection.cursor()
     my_cursor.execute(record)
-    my_connection.commit()
-    my_connection.close()
 
+@connect_disconnect
 def run_command(database_name, command):
-    my_connection=sqlite3.connect(database_name)
-    my_cursor=my_connection.cursor()
     my_cursor.execute(command)
-    my_connection.commit()
-    my_connection.close()
 
 if __name__ == "__main__":
     #Create one Table
